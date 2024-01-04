@@ -1,7 +1,16 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
+use App\Livewire\Counter;
+use App\Livewire\Roles\Roles;
+use App\Livewire\Roles\EditRoles;
+use App\Livewire\Roles\CreateRoles;
+use App\Livewire\Roles\DeleteRoles;
 use Illuminate\Support\Facades\Route;
+use App\Livewire\Permissions\Permissions;
+use App\Http\Controllers\ProfileController;
+use App\Livewire\Permissions\EditPermissions;
+use App\Livewire\Permissions\CreatePermissions;
+use App\Livewire\Permissions\DeletePermissions;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,9 +27,28 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/counter', Counter::class);
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::middleware(['auth', 'role:admin'])->group(function (){
+    Route::get('/', function () {
+        return view('admin.index');
+    })->name('admin.index');
+
+    Route::get('/roles', Roles::class)->name('admin.roles');
+    Route::get('/admin/create-roles', CreateRoles::class)->name('admin.create-role');
+    Route::get('/admin/edit-roles/{id}', EditRoles::class)->name('admin.edit-role');
+    Route::get('/admin/delete-roles/{id}', DeleteRoles::class)->name('admin.delete-role');
+    Route::post('/admin/edit-roles/{id}', [EditRoles::class, 'givePermission'])->name('admin.role.permission');
+
+    Route::get('/permissions', Permissions::class)->name('admin.permissions');
+    Route::get('/admin/create-permissions', CreatePermissions::class)->name('admin.create-permission');
+    Route::get('/admin/edit-permissions/{id}', EditPermissions::class)->name('admin.edit-permission');
+    Route::get('/admin/delete-permissions/{id}', DeletePermissions::class)->name('admin.delete-permission');
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
