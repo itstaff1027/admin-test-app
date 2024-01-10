@@ -33,7 +33,7 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::middleware(['auth', 'role:admin'])->group(function (){
+Route::middleware(['auth'])->group(function (){
     Route::get('/', function () {
         return view('admin.index');
     })->name('admin.index');
@@ -48,6 +48,7 @@ Route::middleware(['auth', 'role:admin'])->group(function (){
     Route::get('/admin/create-permissions', CreatePermissions::class)->name('admin.create-permission');
     Route::get('/admin/edit-permissions/{id}', EditPermissions::class)->name('admin.edit-permission');
     Route::get('/admin/delete-permissions/{id}', DeletePermissions::class)->name('admin.delete-permission');
+    Route::post('/admin/edit-permission/{id}', [EditPermissions::class, 'giveRole'])->name('admin.permission.roles');
 });
 
 Route::middleware('auth')->group(function () {
